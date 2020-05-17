@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shp.web.admin.dao.TbUserDao">
+    <!--根据Email查询信息-->
+    <select id="getUserByEmail" resultType="com.shp.domain.User">
+        select u.id,u.username,u.password,u.email from user AS u where email = #{email}
+    </select>
+    <!--通过Id查询-->
+    <select id="getUserById" resultType="com.shp.domain.User">
+        select * from user where id = #{id}
+    </select>
+    <!--保存user信息-->
+    <insert id="saveUser">
+        insert into user (username,email,password) values(#{username},#{email},#{password})
+    </insert>
+    <!--编辑user信息-->
+    <update id="updateUser">
+        update user set username=#{username},email = #{email},password = #{password} where id = #{id} ;
+    </update>
+    <!--批量删除user-->
+    <delete id="deleteMulti">
+        DELETE FROM user
+        WHERE id IN 
+        <foreach collection="array" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+    <!--多条件搜索-->
+    <!--dataTableSearch 使用表明.列名，因为传入参数是Map，用户信息包含在里面-->
+    <select id="dataTableSearch" resultType="com.shp.domain.User" parameterType="java.util.Map">
+        select * from user
+        <where>
+            <if test="user.username != null and user.username != ''">
+                AND username LIKE concat('%',#{user.username},'%')
+            </if>
+            <if test="user.email != null and user.email != ''">
+                AND email LIKE concat('%',#{user.email},'%')
+            </if>
+        </where>
+        LIMIT #{start},#{length}
+    </select>
+    <!--搜索总数-->
+    <!--dataTableCount 这里不使用表名.列名，是因为传入参数就是user-->
+    <select id="dataTableCount" resultType="java.lang.Integer">
+        select count(*) from user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE concat('%',#{username},'%')
+            </if>
+            <if test="email != null and email != ''">
+                AND email LIKE concat('%',#{email},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

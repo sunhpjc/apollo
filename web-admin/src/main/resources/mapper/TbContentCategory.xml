@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shp.web.admin.dao.TbContentCategoryDao">
+    <!--封装相同代码-->
+    <sql id="TbContentCategoryColums">
+        id,
+        parent_id,
+        name,
+        status,
+        sort_order,
+        is_parent,
+        created,
+        updated
+    </sql>
+    <!--查询所有内容列表，并排序-->
+    <select id="sellectAll" resultType="com.shp.domain.TbContentCategory">
+        SELECT
+        <include refid="TbContentCategoryColums"/>
+        FROM
+          tb_content_category
+        ORDER BY parent_id ASC,
+          sort_order ASC,
+          is_parent DESC
+    </select>
+    <!--根据父类id查询-->
+    <select id="selectByPid" resultType="com.shp.domain.TbContentCategory">
+        select
+        <include refid="TbContentCategoryColums"/>
+        from tb_content_category
+        where
+        parent_id =#{parentId}
+    </select>
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shp.web.admin.dao.TbContentDao">
+    <sql id="tbContentColums">
+        id,
+        category_id AS　categoryId,
+        title,
+        sub_title AS subTitle,
+        title_desc AS titleDesc,
+        url,
+        pic,
+        pic2,
+        content,
+        created,
+        updated
+    </sql>
+    <!--查询全部-->
+    <select id="selectAll" resultType="com.shp.domain.TbContent">
+        SELECT
+        <include refid="tbContentColums"/>
+        FROM
+        tb_content
+    </select>
+    <!--通过id获取-->
+    <select id="getById" resultType="com.shp.domain.TbContent">
+        select * from tb_content where id = #{id}
+    </select>
+    <!--插入-->
+    <insert id="insert">
+        insert into tb_content (
+          id,category_id,title,sub_title,title_desc,url,pic,pic2,content,created,updated
+        )
+        values
+          (#{id},#{categoryId},#{title},#{subTitle},#{titleDesc},#{url},#{pic},#{pic2},#{content},#{created},#{updated})
+    </insert>
+    <!--删除-->
+    <delete id="delete">
+        DELETE FROM tb_content
+        WHERE id = #{id};
+    </delete>
+    <!--修改-->
+    <update id="update">
+        UPDATE
+        tb_content
+        SET
+          category_id = #{categoryId}
+          title = #{title}
+          sub_title = #{subTitle}
+          title_desc = #{titleDesc}
+          url = #{url}
+          pic = #{pic}
+          pic2 = #{pic2}
+          content = #{content}
+          created = #{created}
+          updated = #{updated}
+        WHERE id = #{id}
+    </update>
+    <!--批量删除user-->
+    <delete id="deleteMulti">
+        DELETE FROM tb_content
+        WHERE id IN
+        <foreach collection="array" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+    <!--多条件搜索-->
+    <!--dataTableSearch 使用表明.列名，因为传入参数是Map，用户信息包含在里面-->
+    <select id="dataTableSearch" resultType="com.shp.domain.TbContent" parameterType="java.util.Map">
+        select
+        <include refid="tbContentColums"/>
+        from tb_content
+        <where>
+            <if test="tbContent.title != null and tbContent.title != ''">
+                AND title LIKE concat('%',#{tbContent.title},'%')
+            </if>
+            <if test="tbContent.subTitle != null and tbContent.subTitle != ''">
+                AND sub_title LIKE concat('%',#{tbContent.subTitle},'%')
+            </if>
+        </where>
+        LIMIT #{start},#{length}
+    </select>
+    <!--搜索总数-->
+    <!--dataTableCount 这里不使用表名.列名，是因为传入参数就是user-->
+    <select id="dataTableCount" resultType="java.lang.Integer">
+        select count(*) from tb_content
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE concat('%',#{title},'%')
+            </if>
+            <if test="sub_title != null and sub_title != ''">
+                AND sub_title LIKE concat('%',#{subTitle},'%')
+            </if>
+        </where>
+    </select>
+</mapper>
